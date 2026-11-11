@@ -1,0 +1,17 @@
+node_modules/
+.env
+.env.*
+web-app/data/
+web-app/*.bak
+api-tools/license-keys.json
+api-tools/subscriptions.json
+api-tools/users-history.json
+android-app/build/
+android-app/*.keystore
+_jadx_out/
+_apk_extract/
+_jadx_log.txt
+_build.err.log
+_build.out.log
+*.apk
+scratch/

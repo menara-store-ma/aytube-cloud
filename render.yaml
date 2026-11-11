@@ -1,0 +1,12 @@
+services:
+  - type: web
+    name: aytube-cloud
+    runtime: node
+    plan: free
+    buildCommand: npm install --omit=dev
+    startCommand: node web-app/server.mjs
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: CLOUD_PRO_URL
+        value: https://menara-store-ma.github.io/aytube-cloud/pro.json

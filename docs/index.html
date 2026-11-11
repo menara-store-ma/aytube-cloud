@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>لوحة تحكم AYTube PRO السحابية</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg: #0b0d12;
+      --card: #151923;
+      --border: rgba(255,255,255,0.1);
+      --text: #f3f5f8;
+      --muted: #9aa4b2;
+      --gold: #f5b400;
+      --green: #00e676;
+      --red: #ff5252;
+      --blue: #3ea6ff;
+    }
+    * { box-sizing: border-box; font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background: radial-gradient(circle at top, #182032 0%, var(--bg) 60%);
+      color: var(--text);
+      padding: 20px 14px 40px;
+      display: flex;
+      justify-content: center;
+    }
+    .wrap { width: 100%; max-width: 560px; display: flex; flex-direction: column; gap: 16px; }
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 18px;
+      box-shadow: 0 14px 35px rgba(0,0,0,0.45);
+    }
+    h1 { margin: 0 0 6px; font-size: 1.35rem; color: var(--gold); }
+    .sub { margin: 0; font-size: 0.88rem; color: var(--muted); line-height: 1.5; }
+    .status-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; margin-top: 14px; }
+    .stat { background: rgba(255,255,255,0.03); border: 1px solid var(--border); border-radius: 12px; padding: 10px 12px; }
+    .stat label { display: block; font-size: 0.74rem; color: var(--muted); margin-bottom: 4px; }
+    .stat strong { font-size: 0.92rem; word-break: break-all; }
+    .field { display: flex; flex-direction: column; gap: 6px; margin-bottom: 12px; }
+    .field label { font-size: 0.84rem; font-weight: 700; color: var(--text); }
+    input[type="text"], input[type="password"], textarea {
+      width: 100%;
+      background: #0d1017;
+      color: var(--text);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 11px 12px;
+      font-size: 0.94rem;
+      outline: none;
+    }
+    input:focus, textarea:focus { border-color: var(--gold); }
+    .row { display: flex; gap: 8px; flex-wrap: wrap; }
+    .btn {
+      border: none;
+      border-radius: 10px;
+      padding: 11px 14px;
+      font-size: 0.9rem;
+      font-weight: 700;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      text-decoration: none;
+    }
+    .btn-gold { background: linear-gradient(135deg, #ffd700, #f59e0b); color: #111; flex: 1; }
+    .btn-dark { background: rgba(255,255,255,0.08); color: var(--text); border: 1px solid var(--border); }
+    .btn-danger { background: rgba(255,82,82,0.16); color: #ff8a80; border: 1px solid rgba(255,82,82,0.35); }
+    .btn-blue { background: rgba(62,166,255,0.16); color: var(--blue); border: 1px solid rgba(62,166,255,0.35); }
+    .msg { font-size: 0.85rem; margin-top: 8px; padding: 10px 12px; border-radius: 10px; display: none; }
+    .msg.ok { display: block; background: rgba(0,230,118,0.12); color: var(--green); border: 1px solid rgba(0,230,118,0.3); }
+    .msg.err { display: block; background: rgba(255,82,82,0.12); color: #ff8a80; border: 1px solid rgba(255,82,82,0.3); }
+    pre {
+      background: #090b10;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 10px;
+      font-size: 0.78rem;
+      direction: ltr;
+      text-align: left;
+      overflow-x: auto;
+      color: #a5f3fc;
+      margin: 10px 0 0;
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="card">
+      <h1>لوحة تحكم AYTube PRO السحابية</h1>
+      <p class="sub">عند تغيير الكود هنا وتحديث السيرفر السحابي، تتوقف جميع النسخ القديمة تلقائياً على كافة الهواتف والأجهزة خلال ثوانٍ.</p>
+      <div class="status-grid">
+        <div class="stat">
+          <label>الحالة الآن</label>
+          <strong id="liveState">جاري التحميل...</strong>
+        </div>
+        <div class="stat">
+          <label>رقم الإصدار (Epoch)</label>
+          <strong id="liveEpoch">-</strong>
+        </div>
+        <div class="stat" style="grid-column: 1 / -1;">
+          <label>تجزئة الأمان (SHA-256) — الكود الأصلي مشفّر ولا يظهر للعامة</label>
+          <strong id="liveHash">-</strong>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="field">
+        <label>1) أدخل كود PRO الجديد (أو أنشئ كوداً عشوائياً)</label>
+        <div class="row">
+          <input type="text" id="newCodeInput" placeholder="مثال: AY26-NEW9-8X4M-Q7R2" dir="ltr" autocomplete="off">
+          <button type="button" class="btn btn-dark" id="genCodeBtn">توليد كود 🎲</button>
+        </div>
+      </div>
+
+      <div class="field">
+        <label>2) حالة التفعيل الشاملة</label>
+        <div class="row">
+          <button type="button" class="btn btn-gold" id="buildEnableBtn">تفعيل الكود الجديد وإيقاف القديم ⚡</button>
+          <button type="button" class="btn btn-danger" id="killAllBtn">إيقاف PRO نهائياً عن كل الأجهزة 🛑</button>
+        </div>
+      </div>
+
+      <div class="field" style="margin-top:10px;">
+        <label>توكن GitHub (اختياري — للتحديث التلقائي المباشر من متصفح هاتفك، يُحفظ في جهازك فقط)</label>
+        <input type="password" id="ghTokenInput" placeholder="ghp_... أو github_pat_... (اختياري)" dir="ltr">
+      </div>
+
+      <div id="statusMsg" class="msg"></div>
+      <pre id="jsonPreview" style="display:none;"></pre>
+      <div class="row" id="manualActions" style="display:none; margin-top:10px;">
+        <button type="button" class="btn btn-dark" id="copyJsonBtn">نسخ الـ JSON 📋</button>
+        <a class="btn btn-blue" href="https://github.com/menara-store-ma/aytube-cloud/edit/main/docs/pro.json" target="_blank" rel="noopener">فتح صفحة الحفظ في GitHub ↗</a>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const REPO = 'menara-store-ma/aytube-cloud';
+    const FILE_PATH = 'docs/pro.json';
+    let currentConfig = { app: 'AYTube', proEnabled: true, epoch: 1, codeHash: '', minVersion: '3.0.0' };
+    let latestJsonText = '';
+
+    const $ = id => document.getElementById(id);
+    const tokSaved = localStorage.getItem('aytube_admin_gh_token') || '';
+    if (tokSaved) $('ghTokenInput').value = tokSaved;
+    $('ghTokenInput').addEventListener('change', e => {
+      const v = e.target.value.trim();
+      if (v) localStorage.setItem('aytube_admin_gh_token', v);
+      else localStorage.removeItem('aytube_admin_gh_token');
+    });
+
+    function showMsg(text, ok) {
+      const m = $('statusMsg');
+      m.className = 'msg ' + (ok ? 'ok' : 'err');
+      m.textContent = text;
+    }
+
+    async function sha256Hex(str) {
+      const buf = new TextEncoder().encode(str);
+      const digest = await crypto.subtle.digest('SHA-256', buf);
+      return Array.from(new Uint8Array(digest)).map(b => b.toString(16).padStart(2, '0')).join('');
+    }
+
+    async function loadLive() {
+      try {
+        const res = await fetch('./pro.json?cb=' + Date.now(), { cache: 'no-store' });
+        const d = await res.json();
+        currentConfig = d;
+        $('liveState').textContent = d.proEnabled ? '✅ مُفعّل ويعمل' : '🛑 متوقف على الجميع';
+        $('liveState').style.color = d.proEnabled ? '#00e676' : '#ff5252';
+        $('liveEpoch').textContent = String(d.epoch || 1);
+        $('liveHash').textContent = d.codeHash || '-';
+      } catch (e) {
+        $('liveState').textContent = 'تعذر الجلب';
+      }
+    }
+
+    $('genCodeBtn').addEventListener('click', () => {
+      const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+      const bytes = new Uint8Array(16);
+      crypto.getRandomValues(bytes);
+      const raw = Array.from(bytes, b => chars[b % chars.length]).join('');
+      $('newCodeInput').value = raw.match(/.{1,4}/g).join('-');
+    });
+
+    async function applyChange(enablePro) {
+      let nextHash = currentConfig.codeHash || '';
+      const rawCode = $('newCodeInput').value.trim().toUpperCase().replace(/[^A-Z0-9]/g, '');
+      if (enablePro) {
+        if (!rawCode || rawCode.length < 6) {
+          showMsg('أدخل كود تفعيل جديد مكوّن من 6 أحرف/أرقام على الأقل (يفضّل 16 رمزاً).', false);
+          return;
+        }
+        nextHash = await sha256Hex('AYTUBE_PRO_V1:' + rawCode);
+      }
+
+      const payload = {
+        app: 'AYTube',
+        proEnabled: Boolean(enablePro),
+        epoch: Number(currentConfig.epoch || 1) + 1,
+        codeHash: nextHash,
+        minVersion: '3.0.0',
+        updatedAt: new Date().toISOString()
+      };
+      latestJsonText = JSON.stringify(payload, null, 2) + '\n';
+      $('jsonPreview').style.display = 'block';
+      $('jsonPreview').textContent = latestJsonText;
+      $('manualActions').style.display = 'flex';
+
+      const token = $('ghTokenInput').value.trim();
+      if (token) {
+        try {
+          showMsg('جاري رفع التحديث للسيرفر السحابي...', true);
+          const apiUrl = `https://api.github.com/repos/${REPO}/contents/${FILE_PATH}`;
+          const cur = await fetch(apiUrl, { headers: { Authorization: 'Bearer ' + token } }).then(r => r.json());
+          const contentB64 = btoa(unescape(encodeURIComponent(latestJsonText)));
+          const putRes = await fetch(apiUrl, {
+            method: 'PUT',
+            headers: {
+              Authorization: 'Bearer ' + token,
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+              message: `Update AYTube PRO epoch ${payload.epoch}`,
+              content: contentB64,
+              sha: cur.sha
+            })
+          });
+          if (!putRes.ok) throw new Error('HTTP ' + putRes.status);
+          showMsg('✅ تم تحديث السيرفر السحابي بنجاح! تم إيقاف الكود السابق على كافة الأجهزة فوراً.', true);
+          currentConfig = payload;
+          loadLive();
+          return;
+        } catch (err) {
+          showMsg('تعذر الرفع بالتوكن (' + err.message + '). انسخ الـ JSON أدناه واضغط "فتح صفحة الحفظ في GitHub".', false);
+          return;
+        }
+      }
+
+      try { await navigator.clipboard.writeText(latestJsonText); } catch {}
+      showMsg('تم تجهيز التحديث المشفّر ونسخه! اضغط "فتح صفحة الحفظ في GitHub" واستبدل محتوى الملف ثم احفظ (أو استخدم change-pro-code.bat من الكمبيوتر بنقرة واحدة).', true);
+    }
+
+    $('buildEnableBtn').addEventListener('click', () => applyChange(true));
+    $('killAllBtn').addEventListener('click', () => applyChange(false));
+    $('copyJsonBtn').addEventListener('click', async () => {
+      if (!latestJsonText) return;
+      await navigator.clipboard.writeText(latestJsonText);
+      showMsg('تم نسخ الـ JSON بنجاح 📋', true);
+    });
+
+    loadLive();
+  </script>
+</body>
+</html>

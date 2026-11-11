@@ -1,0 +1,814 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <meta name="referrer" content="strict-origin-when-cross-origin">
+  <title>AYTube</title>
+  <link rel="icon" type="image/png" href="icon.png">
+  <link rel="shortcut icon" type="image/png" href="icon.png">
+  <link rel="apple-touch-icon" href="icon_round.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700;900&family=Cairo:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <script src="https://accounts.google.com/gsi/client" async defer></script>
+</head>
+<body data-theme="dark">
+
+  <!-- Header -->
+  <header class="yt-header">
+    <div class="header-left">
+      <a href="#" class="yt-brand" id="brandHome" dir="ltr" title="الصفحة الرئيسية AYTube">
+        <img src="aytube_logo.png" alt="AYTube" class="brand-emblem-img">
+        <div class="brand-text-block">
+          <span class="yt-logo-text"><span class="ay-a">A</span><span class="ay-y">Y</span><span class="ay-tube">Tube</span></span>
+        </div>
+      </a>
+    </div>
+
+    <div class="header-center">
+      <div class="yt-search-box">
+        <input type="text" id="searchInput" class="yt-search-input" placeholder="بحث" autocomplete="off">
+        <button type="button" id="clearSearchBtn" class="clear-search-btn" title="مسح النص بالكامل" style="display: none;">✕</button>
+        <button type="button" id="searchBtn" class="yt-search-btn" title="بحث">
+          <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
+        </button>
+      </div>
+      <ul id="autocompleteList" class="autocomplete-list"></ul>
+    </div>
+
+    <div class="header-actions">
+      <button type="button" class="btn-pro-header" id="headerProBtn" title="ترقية الحساب إلى AYTube PRO (أدخل كود التفعيل)">
+        <span class="pro-crown-icon">👑</span>
+        <span id="headerProText">ترقية برو</span>
+      </button>
+
+      <div class="account-area" id="accountArea">
+        <button type="button" class="btn-yt-signin" id="openAuthModalBtn" title="تسجيل الدخول إلى حساب Google">
+          <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08 1.99 0 5.97 1.09 6 3.08-1.29 1.94-3.5 3.22-6 3.22z"/></svg>
+          <span id="loginBtnLabel">تسجيل الدخول</span>
+        </button>
+
+        <div class="profile-menu" id="profileMenu">
+          <div class="profile-menu-head">
+            <div class="profile-menu-avatar" id="profileMenuAvatar">م</div>
+            <div class="profile-menu-info">
+              <strong id="profileMenuName">حسابي</strong>
+              <small id="profileMenuEmail">user@gmail.com</small>
+            </div>
+          </div>
+          <button type="button" class="profile-menu-item" id="profileSwitchBtn">🔄 تبديل الحساب</button>
+          <button type="button" class="profile-menu-item" id="profileMyVideosBtn">📺 فيديوهاتي وقناتي</button>
+          <button type="button" class="profile-menu-item" id="profileHistoryBtn">🕒 سجل المشاهدة</button>
+          <button type="button" class="profile-menu-item profile-menu-danger" id="profileSignOutBtn">تسجيل الخروج</button>
+        </div>
+      </div>
+
+      <button type="button" class="btn-icon-yt" id="openSettingsBtn" title="الإعدادات">⚙️</button>
+    </div>
+  </header>
+
+  <!-- Category chips -->
+  <div class="yt-chips-bar" id="chipsBar">
+    <button class="yt-chip active" data-query="الكل">الكل</button>
+    <button class="yt-chip" data-query="اشتراكاتي">🔔 اشتراكاتي</button>
+    <button class="yt-chip" data-query="سجل المشاهدة">🕒 سجل المشاهدة</button>
+    <button class="yt-chip" data-query="المفضلة">⭐ المفضلة</button>
+    <button class="yt-chip" data-query="سورة الكهف">القرآن الكريم</button>
+    <button class="yt-chip" data-query="ملخص مباريات اليوم">مباريات اليوم</button>
+    <button class="yt-chip" data-query="Morocco 4K">المغرب 🇲🇦</button>
+    <button class="yt-chip" data-query="موسيقى هادئة 2026">موسيقى</button>
+    <button class="yt-chip" data-query="أخبار اليوم عاجل">أخبار</button>
+    <button class="yt-chip" data-query="بودكاست جديد">بودكاست</button>
+    <button class="yt-chip" data-query="تكنولوجيا وهواتف">تقنية</button>
+  </div>
+
+  <!-- YouTube-style Vertical Shorts Player View (Matching Image 1) -->
+  <section id="shortsView" class="yt-shorts-view" style="display: none;">
+    <div class="shorts-stage">
+      <button type="button" class="shorts-back-btn" id="shortsBackBtn" title="العودة">
+        <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
+        <span>عودة</span>
+      </button>
+
+      <div class="shorts-player-cluster">
+        <!-- Vertical 9:16 Video Card -->
+        <div class="shorts-card-frame" id="shortsCardFrame">
+          <video id="shortsVideoEl" class="shorts-video-el" playsinline loop preload="auto"></video>
+          <audio id="shortsAudioEl" preload="auto"></audio>
+
+          <div class="shorts-loading" id="shortsLoading" style="display:none;">
+            <div class="player-spinner"></div>
+          </div>
+
+          <!-- Top Controls Bar (Play/Pause, Mute) -->
+          <div class="shorts-top-controls">
+            <div class="shorts-top-group">
+              <button type="button" class="shorts-circle-ctrl" id="shortsPlayBtn" title="تشغيل / إيقاف (K)">
+                <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor" id="shortsPlaySvg"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>
+              </button>
+              <button type="button" class="shorts-circle-ctrl" id="shortsMuteBtn" title="كتم الصوت (M)">
+                <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor" id="shortsMuteSvg"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3A4.5 4.5 0 0 0 14 8v8a4.47 4.47 0 0 0 2.5-4zM14 3.23v2.06a6.99 6.99 0 0 1 0 13.42v2.06A9 9 0 0 0 14 3.23z"/></svg>
+              </button>
+            </div>
+          </div>
+
+          <!-- Center Tap Play Overlay -->
+          <div class="shorts-center-status" id="shortsCenterStatus" style="display:none;">
+            <svg viewBox="0 0 24 24" width="44" height="44" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+          </div>
+
+          <!-- Bottom Metadata Overlay (Channel, Subscribe, Title) -->
+          <div class="shorts-bottom-overlay">
+            <div class="shorts-channel-row">
+              <img id="shortsChannelAvatar" class="shorts-ch-avatar" src="" alt="" referrerpolicy="no-referrer">
+              <span id="shortsChannelName" class="shorts-ch-handle">@channel</span>
+              <button type="button" class="shorts-sub-pill" id="shortsSubBtn">اشتراك</button>
+            </div>
+            <div id="shortsTitle" class="shorts-title-text"></div>
+          </div>
+
+          <!-- Slim Bottom Progress Bar -->
+          <div class="shorts-progress-track">
+            <div class="shorts-progress-fill" id="shortsProgressFill"></div>
+          </div>
+          <input type="range" id="shortsSeekBar" class="shorts-seek-input" min="0" max="1000" step="1" value="0">
+        </div>
+
+        <!-- Side Vertical Action Buttons Column (Matching Image 1: Like, Dislike, Comment, Share, Download/More, Channel Avatar) -->
+        <div class="shorts-side-actions">
+          <div class="shorts-action-unit">
+            <button type="button" class="shorts-action-btn" id="shortsLikeBtn" title="أعجبني">
+              <svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
+            </button>
+            <span class="shorts-action-label" id="shortsLikeCount">إعجاب</span>
+          </div>
+
+          <div class="shorts-action-unit">
+            <button type="button" class="shorts-action-btn" id="shortsDislikeBtn" title="لم يعجبني">
+              <svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor"><path d="M15 3H6c-.83 0-1.54.5-1.84 1.22l-3.02 7.05c-.09.23-.14.47-.14.73v2c0 1.1.9 2 2 2h6.31l-.95 4.57-.03.32c0 .41.17.79.44 1.06L9.83 23l6.59-6.59c.36-.36.58-.86.58-1.41V5c0-1.1-.9-2-2-2zm4 0v12h4V3h-4z"/></svg>
+            </button>
+            <span class="shorts-action-label">لم يعجبني</span>
+          </div>
+
+          <div class="shorts-action-unit">
+            <button type="button" class="shorts-action-btn" id="shortsCommentsBtn" title="التعليقات">
+              <svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor"><path d="M21.99 4c0-1.1-.89-2-1.99-2H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h14l4 4-.01-18z"/></svg>
+            </button>
+            <span class="shorts-action-label" id="shortsCommentsCount">تعليقات</span>
+          </div>
+
+          <div class="shorts-action-unit">
+            <button type="button" class="shorts-action-btn" id="shortsShareBtn" title="مشاركة">
+              <svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor"><path d="M10 9V5l-7 7 7 7v-4.1c5 0 8.5 1.6 11 5.1-1-5-4-10-11-11z"/></svg>
+            </button>
+            <span class="shorts-action-label">مشاركة</span>
+          </div>
+
+          <div class="shorts-action-unit">
+            <button type="button" class="shorts-action-btn" id="shortsDownloadBtn" title="تحميل الفيديو">
+              <svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>
+            </button>
+            <span class="shorts-action-label">تنزيل</span>
+          </div>
+
+          <button type="button" class="shorts-ch-sound-btn" id="shortsSoundThumbBtn" title="زيارة القناة">
+            <img id="shortsSoundThumbImg" src="" alt="" referrerpolicy="no-referrer">
+          </button>
+        </div>
+
+        <!-- Up / Down Navigation Arrows for Next/Prev Shorts -->
+        <div class="shorts-nav-arrows">
+          <button type="button" class="shorts-nav-btn" id="shortsPrevBtn" title="المقطع السابق">
+            <svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor"><path d="M7.41 15.41L12 10.83l4.59 4.58L18 14l-6-6-6 6z"/></svg>
+          </button>
+          <button type="button" class="shorts-nav-btn" id="shortsNextBtn" title="المقطع التالي">
+            <svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor"><path d="M7.41 8.59L12 13.17l4.59-4.58L18 10l-6 6-6-6z"/></svg>
+          </button>
+        </div>
+      </div>
+
+      <!-- Optional Slide-out Comments Panel for Shorts -->
+      <div class="shorts-comments-drawer" id="shortsCommentsDrawer" style="display:none;">
+        <div class="shorts-drawer-header">
+          <span>التعليقات</span>
+          <button type="button" class="btn-icon-yt" id="shortsCloseDrawerBtn">✕</button>
+        </div>
+        <div class="shorts-drawer-list" id="shortsDrawerList"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Watch view -->
+  <section id="watchView" class="yt-watch-view" style="display: none;">
+    <div class="watch-layout">
+      <div class="watch-primary">
+
+        <!-- AYTube Direct HTML5 Video Player -->
+        <div class="player-shell" id="playerShell" tabindex="0" aria-label="مشغل الفيديو">
+          <div class="mini-float-bar" id="miniFloatBar" style="display:none;">
+            <span class="mini-float-title" id="miniFloatTitle">فيديو عائم</span>
+            <div class="mini-float-btns">
+              <button type="button" class="mini-float-btn" id="miniFloatExpandBtn" title="العودة للمشغل الكامل">⛶</button>
+              <button type="button" class="mini-float-btn" id="miniFloatCloseBtn" title="إغلاق المشغل العائم">✕</button>
+            </div>
+          </div>
+          <video id="videoEl" class="ay-video" playsinline preload="auto"></video>
+          <div class="player-poster" id="playerPoster" style="display:none;"></div>
+
+          <div class="player-captions" id="captionsOverlay"></div>
+          <div class="player-toast" id="playerToast"></div>
+
+          <div class="player-controls" id="playerControls">
+            <div class="player-progress-wrap" id="progressWrap">
+              <!-- Floating Video Thumbnail Preview on Scrub/Seek (Image 2) -->
+              <div class="seek-preview-bubble" id="seekPreviewBubble">
+                <div class="seek-preview-hint">السحب للأعلى للتقديم أو الترجيع بدقة أكبر ︽</div>
+                <div class="seek-preview-screen">
+                  <video id="seekPreviewVideo" class="seek-preview-video" muted playsinline preload="auto"></video>
+                </div>
+                <div class="seek-preview-time" id="seekPreviewTime">0:00</div>
+              </div>
+
+              <div class="player-buffered" id="bufferedBar"></div>
+              <input type="range" class="player-seek" id="seekBar" min="0" max="1000" step="1" value="0" aria-label="موضع التشغيل">
+            </div>
+
+            <div class="player-controls-row">
+              <div class="pc-group-left">
+                <button type="button" class="pc-btn" id="playPauseBtn" title="تشغيل/إيقاف مؤقت (K)" aria-label="تشغيل/إيقاف مؤقت">
+                  <svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor" id="playPauseSvg"><path d="M8 5v14l11-7z"/></svg>
+                </button>
+
+                <div class="pc-volume-wrap">
+                  <button type="button" class="pc-btn" id="muteBtn" title="كتم الصوت (M)" aria-label="كتم الصوت">
+                    <svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor" id="muteSvg"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3A4.5 4.5 0 0 0 14 8v8a4.47 4.47 0 0 0 2.5-4zM14 3.23v2.06a6.99 6.99 0 0 1 0 13.42v2.06A9 9 0 0 0 14 3.23z"/></svg>
+                  </button>
+                  <input type="range" class="pc-volume" id="volumeBar" min="0" max="1" step="0.01" value="1" aria-label="مستوى الصوت">
+                </div>
+
+                <span class="pc-time" id="timeDisplay">0:00 / 0:00</span>
+              </div>
+
+              <div class="pc-group-right">
+                <button type="button" class="pc-btn pc-cc" id="ccBtn" title="الترجمة والتسميات التوضيحية" aria-label="الترجمة">CC</button>
+
+                <button type="button" class="pc-btn" id="settingsBtn" title="الإعدادات والجودة" aria-label="الإعدادات والجودة">
+                  <svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor"><path d="M19.14 12.94a7.07 7.07 0 0 0 .05-.94 7.07 7.07 0 0 0-.05-.94l2.03-1.58a.5.5 0 0 0 .12-.64l-1.92-3.32a.5.5 0 0 0-.61-.22l-2.39.96a7.3 7.3 0 0 0-1.62-.94l-.36-2.54a.5.5 0 0 0-.5-.42h-3.84a.5.5 0 0 0-.5.42l-.36 2.54c-.58.24-1.12.55-1.62.94l-2.39-.96a.5.5 0 0 0-.61.22L2.74 8.84a.5.5 0 0 0 .12.64l2.03 1.58a7.07 7.07 0 0 0-.05.94c0 .32.02.63.05.94l-2.03 1.58a.5.5 0 0 0-.12.64l1.92 3.32c.14.24.42.33.61.22l2.39-.96c.5.39 1.04.7 1.62.94l.36 2.54c.04.24.25.42.5.42h3.84c.25 0 .46-.18.5-.42l.36-2.54c.58-.24 1.12-.55 1.62-.94l2.39.96c.24.1.5 0 .61-.22l1.92-3.32a.5.5 0 0 0-.12-.64l-2.03-1.58zM12 15.5A3.5 3.5 0 1 1 12 8.5a3.5 3.5 0 0 1 0 7z"/></svg>
+                </button>
+
+                <button type="button" class="pc-btn" id="pipBtn" title="نافذة عائمة (P)" aria-label="نافذة عائمة">
+                  <svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor"><path d="M19 7h-8v6h8V7zm4-2H1v14h22V5zm-2 12H3V7h18v10z"/></svg>
+                </button>
+
+                <button type="button" class="pc-btn" id="fullscreenBtn" title="ملء الشاشة (F)" aria-label="ملء الشاشة">
+                  <svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor" id="fullscreenSvg"><path d="M7 14H5v5h5v-2H7v-3zm-2-4h2V7h3V5H5v5zm12 7h-3v2h5v-5h-2v3zM14 5v2h3v3h2V5h-5z"/></svg>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Captions menu -->
+          <div class="pc-menu" id="ccMenu" style="display:none;">
+            <div class="pc-menu-head">
+              <span>الترجمة والتسميات</span>
+              <button type="button" class="pc-menu-close" id="ccMenuClose" aria-label="إغلاق">✕</button>
+            </div>
+            <div class="cc-note">اختر لغة الترجمة، ويمكن ترجمتها فوراً إلى العربية أو أي لغة أخرى.</div>
+            <div class="cc-section-title" id="ccTrackSectionTitle" style="display:none;">المسارات المتاحة</div>
+            <div class="cc-list" id="ccTrackList"></div>
+            <div class="pc-list" id="ccLanguageList"></div>
+            <div class="cc-menu-footer">
+              <button type="button" class="cc-off-btn" id="ccOffBtn">إيقاف الترجمة</button>
+            </div>
+          </div>
+
+          <!-- Player settings menu -->
+          <div class="pc-menu" id="settingsMenu" style="display:none;">
+            <div class="pc-menu-head">
+              <span>إعدادات المشغّل</span>
+              <button type="button" class="pc-menu-close" id="settingsMenuClose" aria-label="إغلاق">✕</button>
+            </div>
+            <div class="cc-section-title">الجودة</div>
+            <div class="pc-list" id="qualityList"></div>
+            <div class="cc-section-title">سرعة التشغيل</div>
+            <div class="pc-list" id="speedList"></div>
+          </div>
+
+          <audio id="audioEl" preload="none" style="display:none;"></audio>
+        </div>
+
+        <!-- Video information -->
+        <h1 class="watch-title" id="watchTitle">عنوان الفيديو</h1>
+        <div class="watch-meta-row">
+          <span id="watchViews"></span>
+          <span class="watch-meta-dot">•</span>
+          <span id="watchDate"></span>
+          <span class="watch-meta-dot">•</span>
+          <span id="watchCategory"></span>
+        </div>
+
+        <div class="watch-interactive-bar">
+          <div class="channel-info-row">
+            <img id="watchChannelAvatar" class="channel-avatar-img" src="" alt="شعار القناة" referrerpolicy="no-referrer">
+            <div class="channel-text">
+              <div class="channel-name" id="watchChannel">اسم القناة</div>
+              <div class="channel-subs" id="watchSubs">مشترك</div>
+            </div>
+            <button type="button" class="btn-yt-sub" id="subBtn">اشتراك</button>
+          </div>
+
+          <div class="watch-actions-group">
+            <div class="btn-group-pill">
+              <button type="button" class="yt-action-pill" id="likeBtn" title="أعجبني">
+                <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor" id="likeSvg">
+                  <path d="M1 21h4V9H1v12zm22-11c0-1.1-.9-2-2-2h-6.31l.95-4.57.03-.32c0-.41-.17-.79-.44-1.06L14.17 1 7.59 7.59C7.22 7.95 7 8.45 7 9v10c0 1.1.9 2 2 2h9c.83 0 1.54-.5 1.84-1.22l3.02-7.05c.09-.23.14-.47.14-.73v-2z"/>
+                </svg>
+                <span id="likeCount">0</span>
+              </button>
+              <div class="pill-divider"></div>
+              <button type="button" class="yt-action-pill" id="dislikeBtn" title="لم يعجبني">
+                <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor" id="dislikeSvg">
+                  <path d="M15 3H6c-.83 0-1.54.5-1.84 1.22l-3.02 7.05c-.09.23-.14.47-.14.73v2c0 1.1.9 2 2 2h6.31l-.95 4.57-.03.32c0 .41.17.79.44 1.06L9.83 23l6.59-6.59c.36-.36.58-.86.58-1.41V5c0-1.1-.9-2-2-2zm4 0v12h4V3h-4z"/>
+                </svg>
+              </button>
+            </div>
+
+            <button type="button" class="yt-action-pill" id="quickShareBtn">
+              <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M14 9V5l7 7-7 7v-4.1c-5 0-8.5 1.6-11 5.1 1-5 4-10 11-11z"/></svg>
+              <span>مشاركة</span>
+            </button>
+            <button type="button" class="yt-action-pill" id="quickDownloadBtn">
+              <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96zM17 13l-5 5-5-5h3V9h4v4h3z"/></svg>
+              <span>تنزيل</span>
+            </button>
+            <button type="button" class="yt-action-pill" id="theaterBtn" title="وضع المسرح">
+              <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M19 6H5c-1.1 0-2 .9-2 2v8c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2zm0 10H5V8h14v8z"/></svg>
+              <span>مسرح</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Description -->
+        <div class="watch-description" id="watchDescriptionBox">
+          <div class="desc-top-line">
+            <strong id="descStats"></strong>
+          </div>
+          <div class="desc-text collapsed" id="watchDescription"></div>
+          <button type="button" class="desc-toggle" id="descToggleBtn">عرض المزيد</button>
+        </div>
+
+        <!-- PlayBack options -->
+        <details class="pb-options-details">
+          <summary id="extraOptionsSummary">
+            <span class="summary-title">خيارات AYTUBE الإضافية</span>
+            <span class="summary-pro-badge">👑 PRO</span>
+          </summary>
+          <div class="pb-options-menu">
+            <div class="pb-option-item" id="optHome">
+              <div class="pb-opt-main">
+                <div class="pb-opt-icon"><svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg></div>
+                <div class="pb-opt-text"><div class="pb-opt-title">بيت</div></div>
+              </div>
+              <div class="pb-opt-end"></div>
+            </div>
+
+            <div class="pb-option-item pb-highlighted" id="optBackground">
+              <div class="pb-opt-main">
+                <div class="pb-opt-icon"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="3"></rect><path d="M8 12h8"></path></svg></div>
+                <div class="pb-opt-text">
+                  <div class="pb-opt-title">تشغيل في الخلفية</div>
+                  <div class="pb-opt-sub">الصوت يستمر حتى لو انتقلت لصفحة أخرى أو أغلقت الشاشة</div>
+                </div>
+              </div>
+              <div class="pb-opt-end"><span class="pb-badge-pill">صوت فقط 🎧</span></div>
+            </div>
+
+            <div class="pb-option-item pb-highlighted" id="optPip">
+              <div class="pb-opt-main">
+                <div class="pb-opt-icon"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="3"></rect><rect x="12" y="11" width="8" height="7" rx="1.5" fill="currentColor"></rect></svg></div>
+                <div class="pb-opt-text">
+                  <div class="pb-opt-title">فيديو عائم</div>
+                  <div class="pb-opt-sub">مشغل صغير يبقى فوق الصفحة أثناء التصفح</div>
+                </div>
+              </div>
+              <div class="pb-opt-end"><span class="pb-badge-pill">نافذة عائمة 🪟</span></div>
+            </div>
+
+            <div class="pb-option-item" id="optDesktop">
+              <div class="pb-opt-main">
+                <div class="pb-opt-icon"><svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor"><path d="M16 17.01V10h-2v7.01h-3L15 21l4-3.99h-3zM9 3L5 6.99h3V14h2V6.99h3L9 3z"/></svg></div>
+                <div class="pb-opt-text">
+                  <div class="pb-opt-title">وضع سطح المكتب</div>
+                  <div class="pb-opt-sub">عرض الفيديو بعرض كامل في الصفحة</div>
+                </div>
+              </div>
+              <div class="pb-opt-end"><input type="checkbox" id="desktopModeCheckbox" class="pb-checkbox"></div>
+            </div>
+
+            <div class="pb-option-item" id="optFavorite">
+              <div class="pb-opt-main">
+                <div class="pb-opt-icon"><svg id="favStarSvg" viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg></div>
+                <div class="pb-opt-text"><div class="pb-opt-title" id="favTitleText">مفضل</div></div>
+              </div>
+              <div class="pb-opt-end"></div>
+            </div>
+
+            <div class="pb-option-item" id="optShare">
+              <div class="pb-opt-main">
+                <div class="pb-opt-icon"><svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor"><path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81 1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9c-1.66 0-3 1.34-3 3s1.34 3 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.16c-.05.21-.08.43-.08.65 0 1.61 1.31 2.92 2.92 2.92 1.61 0 2.92-1.31 2.92-2.92s-1.31-2.92-2.92-2.92z"/></svg></div>
+                <div class="pb-opt-text">
+                  <div class="pb-opt-title">مشاركة</div>
+                  <div class="pb-opt-sub">مشاركة الفيديو عبر واتساب، فيسبوك، تيليجرام وغيرها</div>
+                </div>
+              </div>
+              <div class="pb-opt-end"></div>
+            </div>
+
+            <div class="pb-option-item pb-highlighted-dl" id="optDownload">
+              <div class="pb-opt-main">
+                <div class="pb-opt-icon"><svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor"><path d="M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96zM17 13l-5 5-5-5h3V9h4v4h3z"/></svg></div>
+                <div class="pb-opt-text">
+                  <div class="pb-opt-title">تحميل المقطع</div>
+                  <div class="pb-opt-sub">تنزيل الصوت أو الفيديو مباشرة من التطبيق</div>
+                </div>
+              </div>
+              <div class="pb-opt-end"><span class="pb-badge-pill pb-badge-dl">تنزيل ⬇️</span></div>
+            </div>
+
+            <div class="pb-option-item" id="optLoop">
+              <div class="pb-opt-main">
+                <div class="pb-opt-icon"><svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor"><path d="M12 4V1L8 5l4 4V6c3.31 0 6 2.69 6 6 0 1.01-.25 1.97-.7 2.8l1.46 1.46C19.54 15.03 20 13.57 20 12c0-4.42-3.58-8-8-8zm0 14c-3.31 0-6-2.69-6-6 0-1.01.25-1.97.7-2.8L5.24 7.74C4.46 8.97 4 10.43 4 12c0 4.42 3.58 8 8 8v3l4-4-4-4v3z"/></svg></div>
+                <div class="pb-opt-text"><div class="pb-opt-title" id="loopTitleText">حلقة</div><div class="pb-opt-sub">إعادة تشغيل الفيديو تلقائياً وبلا توقف</div></div>
+              </div>
+              <div class="pb-opt-end"></div>
+            </div>
+
+            <div class="pb-option-item" id="optSleep">
+              <div class="pb-opt-main">
+                <div class="pb-opt-icon"><svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor"><path d="M15 1H9v2h6V1zm-4 13h2V8h-2v6zm8.03-6.61l1.42-1.42c-.43-.51-.9-.99-1.41-1.41l-1.42 1.42C16.07 4.74 14.12 4 12 4c-4.97 0-9 4.03-9 9s4.02 9 9 9 9-4.03 9-9c0-2.12-.74-4.07-1.97-5.61zM12 20c-3.87 0-7-3.13-7-7s3.13-7 7-7 7 3.13 7 7-3.13 7-7 7z"/></svg></div>
+                <div class="pb-opt-text"><div class="pb-opt-title" id="sleepTitleText">مؤقت النوم</div><div class="pb-opt-sub">إيقاف التشغيل تلقائياً بعد مدة محددة</div></div>
+              </div>
+              <div class="pb-opt-end"></div>
+            </div>
+          </div>
+        </details>
+
+        <!-- Real YouTube comments (Compact preview matching YouTube mobile -> click to expand) -->
+        <section class="yt-comments-section" id="commentsSection">
+          <div class="comments-preview-box" id="commentsPreviewCard" role="button" tabindex="0" aria-expanded="false">
+            <div class="comments-preview-top">
+              <div class="comments-preview-head-right">
+                <span class="comments-preview-title">التعليقات</span>
+                <span class="comments-preview-count" id="commentsPreviewCount"></span>
+              </div>
+              <span class="comments-preview-dots" aria-hidden="true"><span></span><span class="active"></span><span></span></span>
+            </div>
+            <div class="comments-preview-row">
+              <img id="commentsPreviewAvatar" class="comments-preview-avatar" src="icon_round.png" alt="" referrerpolicy="no-referrer">
+              <div id="commentsPreviewText" class="comments-preview-text">جاري تحميل التعليقات... اضغط للعرض</div>
+            </div>
+          </div>
+
+          <div class="comments-expanded-panel" id="commentsExpandedPanel" style="display:none;">
+            <div class="comments-header">
+              <div class="comments-header-right">
+                <span class="comments-count" id="commentsCount">التعليقات</span>
+                <div class="comments-sort">
+                  <button type="button" class="comments-sort-btn active" id="commentsSortTop">الأكثر صلة</button>
+                  <button type="button" class="comments-sort-btn" id="commentsSortNew">الأحدث</button>
+                </div>
+              </div>
+              <button type="button" class="btn-icon-yt comments-close-btn" id="closeCommentsPanelBtn" title="إغلاق">✕</button>
+            </div>
+
+            <div class="add-comment-box">
+              <div class="comment-user-avatar" id="commentUserAvatar">م</div>
+              <div class="comment-input-area">
+                <div class="comment-reply-banner" id="commentReplyBanner" style="display: none;">
+                  <span id="commentReplyText"></span>
+                  <button type="button" id="cancelReplyBtn" aria-label="إلغاء الرد">✕</button>
+                </div>
+                <input type="text" id="newCommentInput" class="comment-text-input" placeholder="إضافة تعليق..." autocomplete="off">
+                <div class="comment-buttons-row" id="commentButtonsRow" style="display: none;">
+                  <button type="button" class="btn-comment-cancel" id="cancelCommentBtn">إلغاء</button>
+                  <button type="button" class="btn-comment-submit" id="submitCommentBtn" disabled>تعليق</button>
+                </div>
+              </div>
+            </div>
+
+            <div class="comments-list" id="commentsList"></div>
+            <button type="button" class="load-more-comments" id="loadMoreCommentsBtn" style="display:none;">عرض المزيد من التعليقات</button>
+          </div>
+        </section>
+
+      </div>
+
+      <aside class="watch-secondary">
+        <div class="related-header">فيديوهات ذات صلة</div>
+        <div id="relatedList" class="related-list"></div>
+      </aside>
+    </div>
+  </section>
+
+  <!-- Main feed -->
+  <main class="main-container" id="feedView">
+    <div class="videos-grid yt-feed-grid" id="videosContainer">
+      <div class="video-card skeleton-card"><div class="thumb-wrap skeleton-box"></div><div class="video-meta"><div class="card-channel-avatar skeleton-circle"></div><div class="card-info"><div class="skeleton-line" style="width: 85%;"></div><div class="skeleton-line" style="width: 50%; margin-top: 6px;"></div></div></div></div>
+      <div class="video-card skeleton-card"><div class="thumb-wrap skeleton-box"></div><div class="video-meta"><div class="card-channel-avatar skeleton-circle"></div><div class="card-info"><div class="skeleton-line" style="width: 85%;"></div><div class="skeleton-line" style="width: 50%; margin-top: 6px;"></div></div></div></div>
+      <div class="video-card skeleton-card"><div class="thumb-wrap skeleton-box"></div><div class="video-meta"><div class="card-channel-avatar skeleton-circle"></div><div class="card-info"><div class="skeleton-line" style="width: 85%;"></div><div class="skeleton-line" style="width: 50%; margin-top: 6px;"></div></div></div></div>
+      <div class="video-card skeleton-card"><div class="thumb-wrap skeleton-box"></div><div class="video-meta"><div class="card-channel-avatar skeleton-circle"></div><div class="card-info"><div class="skeleton-line" style="width: 85%;"></div><div class="skeleton-line" style="width: 50%; margin-top: 6px;"></div></div></div></div>
+      <div class="video-card skeleton-card"><div class="thumb-wrap skeleton-box"></div><div class="video-meta"><div class="card-channel-avatar skeleton-circle"></div><div class="card-info"><div class="skeleton-line" style="width: 85%;"></div><div class="skeleton-line" style="width: 50%; margin-top: 6px;"></div></div></div></div>
+      <div class="video-card skeleton-card"><div class="thumb-wrap skeleton-box"></div><div class="video-meta"><div class="card-channel-avatar skeleton-circle"></div><div class="card-info"><div class="skeleton-line" style="width: 85%;"></div><div class="skeleton-line" style="width: 50%; margin-top: 6px;"></div></div></div></div>
+    </div>
+  </main>
+
+  <!-- Floating player -->
+  <div id="floatingPlayer" class="floating-player">
+    <div class="floating-header" id="floatingHeader">
+      <div class="floating-title" id="floatingTitle">فيديو عائم - AYTube</div>
+      <div class="floating-ctrls">
+        <button type="button" class="floating-btn" id="fpExpandBtn" title="تكبير المشغل">⛶</button>
+        <button type="button" class="floating-btn" id="fpCloseBtn" title="إغلاق">✕</button>
+      </div>
+    </div>
+    <div class="floating-video-container" id="floatingVideoContainer"></div>
+  </div>
+
+  <!-- Background audio bar -->
+  <div id="bgNotificationBar" class="bg-notification-bar" style="display: none;">
+    <div class="bg-notif-main">
+      <div class="bg-notif-pulse"></div>
+      <div class="bg-notif-info">
+        <div class="bg-notif-title" id="bgNotifTitle">تشغيل في الخلفية</div>
+        <div class="bg-notif-sub">الصوت مستمر أثناء تصفح التطبيق 🎧</div>
+      </div>
+    </div>
+    <div class="bg-notif-ctrls">
+      <button type="button" class="bg-notif-btn" id="bgReturnBtn" title="العودة للفيديو">📺 عرض</button>
+      <button type="button" class="bg-notif-btn bg-notif-stop" id="bgStopBtn" title="إيقاف التشغيل">⏹ إيقاف</button>
+    </div>
+  </div>
+
+  <!-- Share modal -->
+  <div class="modal-overlay" id="shareModal">
+    <div class="modal-card" style="max-width: 480px;">
+      <div class="modal-header">
+        <h3 class="modal-title">مشاركة الفيديو ↪️</h3>
+        <button type="button" class="btn-icon-yt" id="closeShareModalBtn">✕</button>
+      </div>
+      <p class="modal-desc">شارك هذا الفيديو مباشرة مع أصدقائك:</p>
+      <div class="share-social-grid">
+        <a href="#" class="share-btn-item" id="shareWhatsappBtn" target="_blank">
+          <div class="social-circle sc-whatsapp"><svg viewBox="0 0 24 24" width="28" height="28" fill="#fff"><path d="M12.04 2c-5.46 0-9.91 4.45-9.91 9.91 0 1.75.46 3.45 1.32 4.95L2.05 22l5.25-1.38c1.45.79 3.08 1.21 4.74 1.21 5.46 0 9.91-4.45 9.91-9.91 0-2.65-1.03-5.14-2.9-7.01A9.816 9.816 0 0 0 12.04 2zM12.05 20.21c-1.48 0-2.93-.4-4.2-1.15l-.3-.18-3.12.82.83-3.04-.2-.31a8.18 8.18 0 0 1-1.26-4.44c0-4.54 3.7-8.24 8.25-8.24 2.2 0 4.27.86 5.82 2.42a8.18 8.18 0 0 1 2.41 5.83c0 4.54-3.7 8.24-8.23 8.24zm4.52-6.17c-.25-.12-1.47-.72-1.7-.81-.23-.08-.39-.12-.56.12-.17.25-.64.81-.79.97-.14.17-.29.19-.54.06-.25-.12-1.05-.39-2-1.23-.74-.66-1.24-1.47-1.39-1.72-.14-.25-.02-.38.11-.5.11-.11.25-.29.37-.43.12-.14.17-.25.25-.41.08-.17.04-.31-.02-.43s-.56-1.34-.76-1.84c-.2-.48-.41-.42-.56-.43h-.48c-.17 0-.44.06-.66.31-.23.25-.88.86-.88 2.1 0 1.24.9 2.44 1.03 2.61.12.17 1.77 2.7 4.29 3.79.6.26 1.07.41 1.44.53.6.19 1.15.16 1.59.1.48-.07 1.47-.6 1.68-1.18.21-.58.21-1.07.14-1.18-.06-.13-.22-.2-.47-.32z"/></svg></div>
+          <span>واتساب</span>
+        </a>
+        <a href="#" class="share-btn-item" id="shareFacebookBtn" target="_blank">
+          <div class="social-circle sc-facebook"><svg viewBox="0 0 24 24" width="28" height="28" fill="#fff"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg></div>
+          <span>فيسبوك</span>
+        </a>
+        <a href="#" class="share-btn-item" id="shareTelegramBtn" target="_blank">
+          <div class="social-circle sc-telegram"><svg viewBox="0 0 24 24" width="28" height="28" fill="#fff"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm4.64 6.8c-.15 1.58-.8 5.42-1.13 7.19-.14.75-.42 1-.68 1.03-.58.05-1.02-.38-1.58-.75-.88-.58-1.38-.94-2.23-1.5-.99-.65-.35-1.01.22-1.59.15-.15 2.71-2.48 2.76-2.69a.2.2 0 0 0-.05-.18c-.06-.05-.14-.03-.21-.02-.09.02-1.49.95-4.22 2.79-.4.27-.76.41-1.08.4-.36-.01-1.04-.2-1.55-.37-.63-.2-1.12-.31-1.08-.66.02-.18.27-.36.75-.55 2.92-1.27 4.86-2.11 5.83-2.51 2.78-1.16 3.35-1.36 3.73-1.36.08 0 .27.02.39.12.1.08.13.19.14.27-.01.06.01.24 0 .38z"/></svg></div>
+          <span>تيليجرام</span>
+        </a>
+        <a href="#" class="share-btn-item" id="shareTwitterBtn" target="_blank">
+          <div class="social-circle sc-x"><svg viewBox="0 0 24 24" width="22" height="22" fill="#fff"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg></div>
+          <span>منصة X</span>
+        </a>
+        <a href="#" class="share-btn-item" id="shareEmailBtn">
+          <div class="social-circle sc-email"><svg viewBox="0 0 24 24" width="26" height="26" fill="#fff"><path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg></div>
+          <span>البريد</span>
+        </a>
+      </div>
+      <div class="share-copy-container">
+        <input type="text" id="shareUrlInput" class="share-url-field" readonly>
+        <button type="button" class="btn-yt-sub" id="doCopyLinkBtn">نسخ الرابط</button>
+      </div>
+      <div id="copySuccessMsg" class="status-msg" style="color: #00ff88; display: none;">✅ تم نسخ الرابط بنجاح!</div>
+    </div>
+  </div>
+
+  <!-- Download modal -->
+  <div class="modal-overlay" id="downloadModal">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3 class="modal-title">تحميل الفيديو ⬇️</h3>
+        <button type="button" class="btn-icon-yt" id="closeDownloadBtn">✕</button>
+      </div>
+      <div class="modal-video-label" id="downloadVideoTitle">عنوان الفيديو</div>
+      <div class="download-options-list">
+        <button type="button" class="download-card-btn" id="downloadAudioBtn">
+          <div class="dl-icon">🎵</div>
+          <div class="dl-info">
+            <div class="dl-title">تحميل الصوت (M4A)</div>
+            <div class="dl-sub">تنزيل المسار الصوتي مباشرة إلى جهازك</div>
+          </div>
+          <div class="dl-action-side">
+            <div class="dl-arrow-circle" title="بدء التحميل الآن"><svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor"><path d="M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96zM17 13l-5 5-5-5h3V9h4v4h3z"/></svg></div>
+            <span class="dl-badge">M4A</span>
+          </div>
+        </button>
+        <button type="button" class="download-card-btn" id="downloadVideoBtn">
+          <div class="dl-icon">🎬</div>
+          <div class="dl-info">
+            <div class="dl-title">تحميل الفيديو (MP4)</div>
+            <div class="dl-sub">تنزيل ملف الفيديو بأعلى جودة متاحة</div>
+          </div>
+          <div class="dl-action-side">
+            <div class="dl-arrow-circle" title="بدء التحميل الآن"><svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor"><path d="M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96zM17 13l-5 5-5-5h3V9h4v4h3z"/></svg></div>
+            <span class="dl-badge">MP4</span>
+          </div>
+        </button>
+      </div>
+      <div id="downloadStatusMsg" class="status-msg"></div>
+    </div>
+  </div>
+
+  <!-- Sleep timer modal -->
+  <div class="modal-overlay" id="sleepModal">
+    <div class="modal-card" style="max-width: 420px;">
+      <div class="modal-header">
+        <h3 class="modal-title">مؤقت النوم ⏲️</h3>
+        <button type="button" class="btn-icon-yt" id="closeSleepBtn">✕</button>
+      </div>
+      <p class="modal-desc">اختر المدة التي تريد بعدها إيقاف تشغيل الفيديو والصوت تلقائياً:</p>
+      <div class="sleep-grid">
+        <button type="button" class="sleep-option-btn" data-min="15">15 دقيقة</button>
+        <button type="button" class="sleep-option-btn" data-min="30">30 دقيقة</button>
+        <button type="button" class="sleep-option-btn" data-min="45">45 دقيقة</button>
+        <button type="button" class="sleep-option-btn" data-min="60">ساعة كاملة</button>
+      </div>
+      <button type="button" class="sleep-cancel-btn" id="cancelSleepTimerBtn">إلغاء مؤقت النوم</button>
+      <div id="sleepStatusMsg" class="status-msg"></div>
+    </div>
+  </div>
+
+  <!-- Settings modal -->
+  <div class="modal-overlay" id="settingsModal">
+    <div class="modal-card" style="max-width: 520px;">
+      <div class="modal-header">
+        <h3 class="modal-title">الإعدادات ⚙️</h3>
+        <button type="button" class="btn-icon-yt" id="closeSettingsBtn">✕</button>
+      </div>
+
+      <div class="settings-features-list">
+        <div class="setting-row">
+          <div class="setting-row-info">
+            <div class="setting-row-title">المظهر</div>
+            <div class="setting-row-sub">التبديل بين الوضع الداكن والفاتح</div>
+          </div>
+          <button type="button" class="btn-yt-sub" id="settingThemeBtn">داكن</button>
+        </div>
+
+        <div class="setting-row">
+          <div class="setting-row-info">
+            <div class="setting-row-title">تشغيل الفيديو تلقائياً</div>
+            <div class="setting-row-sub">بدء التشغيل مباشرة عند فتح الفيديو</div>
+          </div>
+          <input type="checkbox" id="settingAutoplayToggle" class="pb-checkbox" checked>
+        </div>
+
+        <div class="setting-row">
+          <div class="setting-row-info">
+            <div class="setting-row-title">الجودة المفضلة</div>
+            <div class="setting-row-sub">تُستخدم عند توفرها في الفيديو</div>
+          </div>
+          <select id="settingQualitySelect" class="settings-select">
+            <option value="auto">تلقائي</option>
+            <option value="1080">1080p</option>
+            <option value="720">720p</option>
+            <option value="480">480p</option>
+            <option value="360">360p</option>
+          </select>
+        </div>
+
+        <div class="setting-row" style="cursor: pointer; display: none;" id="apkServerSettingsRow">
+          <div class="setting-row-info">
+            <div class="setting-row-title">خادم التشغيل (مستقل / سحابي)</div>
+            <div class="setting-row-sub">يعمل التطبيق مستقلاً بدون كمبيوتر، ويمكنك ربط سحابة اختيارياً</div>
+          </div>
+          <span style="font-size: 1.1rem;">☁️</span>
+        </div>
+
+        <div class="setting-row" style="cursor: pointer;" id="clearHistoryRow">
+          <div class="setting-row-info">
+            <div class="setting-row-title" style="color: #ff5555;">مسح سجل المشاهدة والمفضلة</div>
+            <div class="setting-row-sub">حذف البيانات المحلية من التطبيق</div>
+          </div>
+          <span style="font-size: 1.1rem;">🗑️</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Google-style account chooser / sign-in modal -->
+  <div class="modal-overlay google-auth-overlay" id="googleAuthModal">
+    <div class="google-auth-dialog" role="dialog" aria-modal="true" aria-labelledby="gaTitle">
+      <div class="ga-topbar">
+        <div class="ga-brand">
+          <svg viewBox="0 0 48 48" width="26" height="26" aria-hidden="true">
+            <path fill="#4285F4" d="M45.12 24.5c0-1.56-.14-3.06-.4-4.5H24v8.51h11.84c-.51 2.75-2.06 5.08-4.39 6.64v5.52h7.11c4.16-3.83 6.56-9.47 6.56-16.17z"/>
+            <path fill="#34A853" d="M24 46c5.94 0 10.92-1.97 14.56-5.33l-7.11-5.52c-1.97 1.32-4.49 2.1-7.45 2.1-5.73 0-10.58-3.87-12.31-9.07H4.34v5.7C7.96 41.07 15.4 46 24 46z"/>
+            <path fill="#FBBC05" d="M11.69 28.18C11.25 26.86 11 25.45 11 24s.25-2.86.69-4.18v-5.7H4.34C2.85 17.09 2 20.45 2 24s.85 6.91 2.34 9.88l7.35-5.7z"/>
+            <path fill="#EA4335" d="M24 10.75c3.23 0 6.13 1.11 8.41 3.29l6.31-6.31C34.91 4.18 29.93 2 24 2 15.4 2 7.96 6.93 4.34 14.12l7.35 5.7c1.73-5.2 6.58-9.07 12.31-9.07z"/>
+          </svg>
+          <span>تسجيل الدخول باستخدام Google</span>
+        </div>
+        <button type="button" class="ga-close" id="closeGoogleAuthBtn" aria-label="إغلاق">✕</button>
+      </div>
+
+      <div class="ga-body">
+        <!-- Account chooser -->
+        <div id="gaChooseView">
+          <h2 class="ga-title" id="gaTitle">اختر حساباً</h2>
+          <p class="ga-subtitle">للمتابعة إلى <strong>AYTube</strong></p>
+
+          <!-- Official Google One-Tap / GIS Button -->
+          <div id="gsiButtonContainer" class="gsi-container" style="display:flex; justify-content:center; margin: 16px 0 10px;"></div>
+
+          <div class="google-accounts-picker" id="googleAccountsList"></div>
+        </div>
+
+        <div id="authStatusMsg" class="status-msg"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- AYTube PRO Upgrade Modal -->
+  <div class="modal-overlay" id="proModal">
+    <div class="modal-card pro-modal-card">
+      <div class="modal-header pro-modal-header">
+        <div class="pro-modal-title-wrap">
+          <span class="pro-crown-badge">👑</span>
+          <h3 class="modal-title pro-modal-title">ترقية الحساب إلى AYTube PRO</h3>
+        </div>
+        <button type="button" class="btn-icon-yt" id="closeProModalBtn" title="إغلاق">✕</button>
+      </div>
+      <div class="pro-modal-body">
+        <p class="pro-modal-sub" id="proModalPrompt">هذه الميزة حصرية لحسابات <strong>AYTube PRO</strong>. أدخل كود التفعيل للترقية والوصول إلى كافة الميزات الممتازة.</p>
+        
+        <div class="pro-features-list">
+          <div class="pro-feat-item">
+            <span class="pro-feat-icon"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="#00e676" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path><path d="m9 12 2 2 4-4"></path></svg></span>
+            <div class="pro-feat-info">
+              <strong>بدون إعلانات نهائياً (Ad-Free)</strong>
+              <span>مشاهدة جميع الفيديوهات وShorts بدون أي إعلانات مزعجة</span>
+            </div>
+          </div>
+          <div class="pro-feat-item">
+            <span class="pro-feat-icon"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="#ffd700" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path></svg></span>
+            <div class="pro-feat-info">
+              <strong>الترجمة الفورية الذكية لجميع اللغات (CC)</strong>
+              <span>ترجمة مباشرة ودقيقة لأي فيديو بأكثر من 40 لغة عالمية</span>
+            </div>
+          </div>
+          <div class="pro-feat-item">
+            <span class="pro-feat-icon"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="#ffd700" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 18v-6a9 9 0 0 1 18 0v6"></path><path d="M21 19a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3zM3 19a2 2 0 0 0 2 2h1a2 2 0 0 0 2-2v-3a2 2 0 0 0-2-2H3z"></path></svg></span>
+            <div class="pro-feat-info">
+              <strong>التشغيل في الخلفية مع إغلاق الشاشة</strong>
+              <span>استمع للصوتيات والبودكاست والمباريات حتى مع قفل شاشة الهاتف</span>
+            </div>
+          </div>
+          <div class="pro-feat-item">
+            <span class="pro-feat-icon"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="#ffffff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="3"></rect><rect x="12" y="11" width="8" height="7" rx="1.5" fill="#ffffff"></rect></svg></span>
+            <div class="pro-feat-info">
+              <strong>المشغل المصغر العائم (Picture-in-Picture)</strong>
+              <span>مشاهدة الفيديو كنافذة عائمة فوق جميع التطبيقات والصفحات</span>
+            </div>
+          </div>
+          <div class="pro-feat-item">
+            <span class="pro-feat-icon"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="#ffd700" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg></span>
+            <div class="pro-feat-info">
+              <strong>تنزيل الفيديوهات والمقاطع (MP4 / MP3)</strong>
+              <span>حفظ الفيديوهات بجودة عالية مع الصوت أو كملف صوتي MP3 بضغطة واحدة</span>
+            </div>
+          </div>
+          <div class="pro-feat-item">
+            <span class="pro-feat-icon"><svg viewBox="0 0 24 24" width="24" height="24" fill="#ffd700"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg></span>
+            <div class="pro-feat-info">
+              <strong>خيارات المشاهدة المتقدمة</strong>
+              <span>المفضلات، المشاركة السريعة، التكرار التلقائي (حلقة)، مؤقت النوم، ووضع سطح المكتب</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="pro-input-wrap">
+          <div class="pro-input-field-group">
+            <span class="pro-key-icon">🔑</span>
+            <input type="text" id="proCodeInput" class="pro-code-input" placeholder="أدخل كود التفعيل المكون من 16 حرفاً ورقماً..." autocomplete="off" spellcheck="false">
+          </div>
+          <button type="button" class="pro-activate-btn" id="proActivateBtn">تفعيل الحساب الآن ⚡</button>
+        </div>
+        <div id="proModalStatus" class="pro-status-msg" style="display: none;"></div>
+      </div>
+    </div>
+  </div>
+
+  <footer class="ay-app-footer" id="appFooter">
+    هذا التطبيق تم تطويره من طرف أيوب مغلابي
+  </footer>
+
+  <script src="app.js"></script>
+</body>
+</html>
