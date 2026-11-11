@@ -5083,7 +5083,9 @@ function openProModal(featureName = 'هذه الميزة', onAuthorized = null) 
     el.proModalStatus.textContent = '';
   }
   showModal(el.proModal);
-  setTimeout(() => el.proCodeInput?.focus(), 150);
+  if (window.innerWidth > 768) {
+    setTimeout(() => el.proCodeInput?.focus(), 150);
+  }
 }
 
 function closeProModal() {
