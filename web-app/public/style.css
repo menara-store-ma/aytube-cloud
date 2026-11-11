@@ -5643,6 +5643,10 @@ body {
     grid-template-columns: 1fr;
     gap: 16px;
   }
+  .modal-overlay {
+    background: rgba(0, 0, 0, 0.86);
+    backdrop-filter: none;
+  }
   .modal-card,
   .pro-modal-card {
     width: min(94vw, 500px);
