@@ -618,6 +618,34 @@ async function init() {
     await handleAuthReturn(authStatus).catch(() => {});
   }
 
+  window.handleAndroidBack = () => {
+    const openModal = document.querySelector('.modal-overlay.active');
+    if (openModal) {
+      hideModal(openModal);
+      if (openModal === el.proModal) state.proPendingAction = null;
+      return true;
+    }
+    if (shortsState.active) {
+      showFeedView({ pause: true });
+      pushAppRoute({});
+      return true;
+    }
+    if (el.watchView && el.watchView.style.display !== 'none' && !state.isFloating && !state.isBackground) {
+      startFloatingPlayer({ silentToast: true });
+      pushAppRoute({});
+      return true;
+    }
+    if (document.querySelector('#feedGrid .ch-page') || (state.currentQuery && state.currentQuery !== DEFAULT_QUERY)) {
+      setActiveChip('الكل');
+      if (el.searchInput) el.searchInput.value = '';
+      updateClearSearchButton();
+      loadFeed(DEFAULT_QUERY, { cache: true });
+      pushAppRoute({});
+      return true;
+    }
+    return false;
+  };
+
   window.addEventListener('popstate', () => {
     routeFromUrl({ skipPush: true, fromPopstate: true });
   });
@@ -2461,7 +2489,7 @@ function applyMediaSources(data, quality, options = {}) {
   el.videoEl.muted = true;
   el.videoEl.controls = false;
   el.videoEl.preload = 'auto';
-  el.videoEl.removeAttribute('poster');
+  el.videoEl.setAttribute('poster', 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7');
   if (el.playerPoster) {
     const poster = options.autoplay === false ? (data.video?.thumbnail || state.activeVideo?.thumbnail || '') : '';
     el.playerPoster.style.backgroundImage = poster ? `url("${poster}")` : '';

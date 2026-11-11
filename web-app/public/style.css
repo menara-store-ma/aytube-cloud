@@ -5581,11 +5581,14 @@ body {
     padding: 7px 13px;
     min-height: 36px;
     font-size: 0.8rem;
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
   }
   .btn-yt-signin,
   .btn-icon-yt {
     min-width: 36px;
     min-height: 36px;
+    touch-action: manipulation;
   }
   .player-shell {
     max-height: 70dvh;
